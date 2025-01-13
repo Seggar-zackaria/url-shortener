@@ -15,16 +15,23 @@ export default function UrlList() {
   const [copied, setCopied] = useState<boolean>(false);
   const [copyUrl, setCopyUrl] = useState<string>("");
 
-  const handleCopyUrl = (url: string) => {
+  const handleCopyUrl = async (url: string) => {
     const fullUrl = `${shortenUrl(url)}`;
-    navigator.clipboard.writeText(fullUrl).then(() => {
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(fullUrl);
+      }
+
       setCopied(true);
       setCopyUrl(url);
       setTimeout(() => {
         setCopied(false);
         setCopyUrl("");
       }, 2000);
-    });
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
   };
 
   const shortenUrl = (shortCode: string) => {
