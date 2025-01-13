@@ -6,18 +6,7 @@ import { Check, CopyIcon, EyeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CardSkeleton } from "./ui/skeleton";
 
-interface UrlResponse {
-  urls: Url[];
-  createdAt: string;
-  id: string;
-}
-
-interface Url {
-  id: string;
-  originalUrl: string;
-  shortCode: string;
-  visits: number;
-}
+import { UrlResponse, Url } from "@/lib/definitions";
 
 export default function UrlList() {
   const [urls, setUrls] = useState<Url[]>([]);
@@ -38,8 +27,9 @@ export default function UrlList() {
     });
   };
 
-  const shortenUrl = (shortCode: string) =>
-    `${process.env.NEXT_PUBLIC_BASE_URL}/${shortCode}`;
+  const shortenUrl = (shortCode: string) => {
+    return `${process.env.NEXT_PUBLIC_BASE_URL}/${shortCode}`;
+  };
 
   const fetchUrls = async () => {
     setLoading(true);
@@ -62,15 +52,20 @@ export default function UrlList() {
   if (loading)
     return (
       <div>
-        {[1, 2, 3, 4, 5].map((ske) => (
-          <li key={ske} className="items-center mb-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <li key={i} className="items-center mb-4 list-none">
             <CardSkeleton />
           </li>
         ))}
       </div>
     );
   if (error) return <div>Error: {error}</div>;
-
+  if (urls.length === 0)
+    return (
+      <div className="text-center text-3xl text-gray-500 mt-8">
+        No URLS - insert an URL ^^
+      </div>
+    );
   return (
     <div>
       <h2 className="text-2xl font-bold mb-2">Your URLs</h2>
